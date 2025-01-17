@@ -3,19 +3,19 @@
 
 #include "Card.h"
 
-// Константи
+// Константа
 const int MAX_CARDS_IN_HAND = 3;
 
-// Структура за играч
+// Сктруктура на играча
 struct Player {
-    int id;                     // Уникален ID на играча
+    int id;                     // ID на играча
     int balance;                // Баланс на играча
-    Card hand[MAX_CARDS_IN_HAND]; // Ръката на играча
-    bool isActive;              // Активност на играча
+    Card* hand;                 // Динамично подаване на ръката
+    bool isActive;              // Активния статус ма играча
 };
 
-// Функции за играч
+// Функции за играча
 void initializePlayer(Player& player, int id, int initialBalance);
-void printPlayerHand(const Player& player);
+void printPlayerHand(const Player* player);
 
 #endif

@@ -1,17 +1,17 @@
 ﻿#ifndef CARD_H
 #define CARD_H
 
-// Константи за боите и ранговете на картите
+// Константи за боите и картите
 enum Suit { CLUBS, DIAMONDS, HEARTS, SPADES };
-enum Rank { SEVEN = 7, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE };
+enum Rank { SEVEN , EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE };
 
-// Структура за карта
+// Структура на картата
 struct Card {
     Suit suit;
     Rank rank;
 };
 
-// Функции за работа с карти
-void printCard(const Card& card);
+// Принтиране на карта
+void printCard(const Card* card);
 
 #endif

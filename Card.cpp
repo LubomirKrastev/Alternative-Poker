@@ -1,10 +1,33 @@
 ﻿#include "Card.h"
 #include <iostream>
 
-// Печат на карта
-void printCard(const Card& card) {
-    std::string suits[] = { "Clubs", "Diamonds", "Hearts", "Spades" };
-    std::string ranks[] = { "7", "8", "9", "10", "Jack", "Queen", "King", "Ace" };
+// Създаване на карта динамичо
+Card* createCard(Suit suit, Rank rank) {
+    Card* card = new Card;
+    card->suit = suit;
+    card->rank = rank;
+    return card;
+}
 
-    std::cout << ranks[card.rank - 7] << " of " << suits[card.suit] << std::endl;
+// Принтиране на карта
+void printCard(const Card* card) {
+    if (!card) {
+        return;
+    }
+
+    const char* suits[] = { "Clubs", "Diamonds", "Hearts", "Spades" };
+    const char* ranks[] = { "7", "8", "9", "10", "Jack", "Queen", "King", "Ace" };
+
+    if (card->rank >= SEVEN && card->rank <= ACE) {
+        std::cout << ranks[card->rank - SEVEN] << " of " << suits[card->suit] << std::endl;
+    }
+    else {
+        return;
+    }
+}
+
+// Освобождаване на карта динамично
+void freeCard(Card*& card) {
+    delete card;
+    card = nullptr; 
 }
