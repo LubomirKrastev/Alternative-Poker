@@ -17,7 +17,7 @@ void shuffleDeck(Card* deck, int size);
 void dealCards(Player* players, int numPlayers, Card* deck, int& deckIndex);
 int calculateCardValue(Rank rank);
 int calculateHandValue(const Player& player);
-bool handleTie(Player* players, int numPlayers, int& pot, int maxHandValue);
+bool handleTie(Player* players, int numPlayers, int& pot, int maxHandValue, Card* deck);
 int initializeNewGame(Player*& players);
 void playRound(Player* players, int numPlayers, Card* deck);
 void saveGameState(Player* players, int numPlayers);

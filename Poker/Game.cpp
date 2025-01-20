@@ -18,10 +18,10 @@ void initializeDeck(Card* deck, int size) {
 }
 
 // Разбъркване на тестето
-void shuffleDeck(Card* deck, int size) {
+void shuffleDeck(Card* deck, int DECK_SIZE) {
     srand(time(0));
 
-    for (int i = size - 1; i > 0; i--) {
+    for (int i = DECK_SIZE - 1; i > 0; i--) {
         int j = rand() % (i + 1);
         Card temp = deck[i];
         deck[i] = deck[j];
@@ -151,76 +151,104 @@ int calculateHandValue(const Player& player) {
     return highestCardValue; // Най-високата карта, ако няма комбинации
 }
 
-// Проверка за равенство
-bool handleTie(Player* players, int numPlayers, int& pot, int maxHandValue) {
-    int tiedPlayers[MAX_PLAYERS] = { 0 };
-    int numTiedPlayers = 0;
 
-    // Намираме играчите с максимална ръка
-    for (int i = 0; i < numPlayers; i++) {
+//Раздаване на карти на играчите в равенството
+void dealCardsToActivePlayers(Player* players, int numPlayers, Card* deck, int& deckIndex) {
+    for (int i = 0; i < numPlayers; ++i) {
+        if (players[i].isActive) {
+            for (int j = 0; j < MAX_CARDS_IN_HAND; ++j) {
+                if (deckIndex < DECK_SIZE) {
+                    players[i].hand[j] = deck[deckIndex++];
+                }
+                else {
+                    std::cerr << "The deck is out of cards!" << std::endl;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+// Проверка за равенство
+bool handleTie(Player* players, int numPlayers, int& pot, int maxHandValue, Card* deck) {
+    int tiedPlayerIndices[MAX_PLAYERS];
+    int numTiedPlayers = 0;
+    int deckIndex = 0;
+
+    int tempPot = pot;
+
+    // Проверка за това кой влиза в равенството
+    for (int i = 0; i < numPlayers; ++i) {
         if (players[i].isActive && calculateHandValue(players[i]) == maxHandValue) {
-            tiedPlayers[numTiedPlayers++] = i;
+            tiedPlayerIndices[numTiedPlayers++] = i;
         }
     }
 
+    // Проверяваме за равенство
     if (numTiedPlayers > 1) {
-        std::cout << "IT IS A TIE\n";
+        std::cout << "\nIT IS A TIE\n";
         std::cout << "Players with equal hands:\n";
-        for (int i = 0; i < numTiedPlayers; i++) {
-            std::cout << "Player " << players[tiedPlayers[i]].id << "\n";
+        for (int i = 0; i < numTiedPlayers; ++i) {
+            std::cout << "Player " << players[tiedPlayerIndices[i]].id << "\n";
         }
 
-        // Предлагаме на останалите играчи да се включат в равенството
-        for (int i = 0; i < numPlayers; i++) {
-            bool alreadyInTie = false;
-            for (int j = 0; j < numTiedPlayers; j++) {
-                if (tiedPlayers[j] == i) {
-                    alreadyInTie = true;
-                    break;
-                }
+        // Предлагаме на другите играчи да влязат в играта
+        for (int i = 0; i < numPlayers; ++i) {
+            if (!players[i].isActive || calculateHandValue(players[i]) == maxHandValue) {
+                continue;
             }
 
-            if (!alreadyInTie && players[i].isActive) {
+            if (players[i].balance == 0) {
+                players[i].balance = 50; // Дават се 50 точки, на тези които нямат пари
+                pot -= 50;
+                players[i].balance -= 50;
+                players[i].isActive = true;
+                tiedPlayerIndices[numTiedPlayers++] = i;
+                std::cout << "Player " << players[i].id
+                    << " had zero balance and received 50 points to join the tie.\n";
+            }
+            else {
                 std::cout << "Player " << players[i].id
                     << ", do you want to join the TIE? You have to pay "
                     << pot / 2 << " (y/n): ";
                 char choice;
                 std::cin >> choice;
 
-                if (choice == 'y' && players[i].balance >= pot / 2) {
-                    players[i].balance -= pot / 2;
-                    pot += pot / 2;
-                    tiedPlayers[numTiedPlayers++] = i;
+                if (choice == 'y') {
+                    players[i].balance -= tempPot / 2;
+                    pot += tempPot / 2;
                     players[i].isActive = true;
+                    tiedPlayerIndices[numTiedPlayers++] = i;
                     std::cout << "Player " << players[i].id << " has joined the tie!\n";
-                }
-                else if (choice == 'y' && players[i].balance == 0) {
-                    players[i].balance += 50; // Даваме 50 точки за играча
-                    tiedPlayers[numTiedPlayers++] = i;
-                    players[i].isActive = true;
-                    std::cout << "Player " << players[i].id
-                        << " received 50 points and joined the tie!\n";
                 }
                 else {
                     std::cout << "Player " << players[i].id << " chose not to join.\n";
                 }
             }
-        }
 
-        // Деактивираме играчите, които не са част от равенството
-        for (int i = 0; i < numPlayers; i++) {
-            players[i].isActive = false;
-        }
-        for (int i = 0; i < numTiedPlayers; i++) {
-            players[tiedPlayers[i]].isActive = true;
-        }
+            // Премахване на тези, които не са в играта
+            for (int i = 0; i < numPlayers; ++i) {
+                players[i].isActive = false;
+            }
+            for (int i = 0; i < numTiedPlayers; ++i) {
+                players[tiedPlayerIndices[i]].isActive = true;
+            }
 
-        std::cout << "The pot carries over to the next round: " << pot << "\n";
-        return true; // Рундът приключва с равенство
+            std::cout << "The pot carries over to the next round: " << pot << "\n";
+            std::cout << "\nIT IS A TIE\n";
+
+
+            // Продължаваме към следващия рунд
+            shuffleDeck(deck, DECK_SIZE);
+            dealCardsToActivePlayers(players, numTiedPlayers, deck, deckIndex);
+            playRound(players, numTiedPlayers, deck);
+
+            return true; // Има равенство
+        }
     }
-
     return false; // Няма равенство
 }
+
 
 // Инициализиране на игра
 int initializeNewGame(Player*& players) {
@@ -262,9 +290,20 @@ void playRound(Player* players, int numPlayers, Card* deck) {
 
     // Показване на началния баланс и пот
     std::cout << "\nCurrent balances:\n";
+
+    bool flag = true;
+
     for (int i = 0; i < numPlayers; i++) {
         std::cout << "Player " << players[i].id << ": " << players[i].balance << " ";
+        
+        if (i == (numPlayers - 1) / 2 && flag) {
+            std::cout << std::endl;
+            flag = false;
+        }
+            
     }
+
+    std::cout << std::endl;
     std::cout << "\nPot: " << pot << "\n";
 
     // Основен рунд
@@ -358,7 +397,7 @@ void playRound(Player* players, int numPlayers, Card* deck) {
     }
 
     // Проверка за равенство
-    if (handleTie(players, numPlayers, pot, maxHandValue)) {
+    if (handleTie(players, numPlayers, pot, maxHandValue, deck)) {
         return; // Ако има равенство, излизаме от рунда
     }
 
