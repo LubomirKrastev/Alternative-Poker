@@ -1,9 +1,22 @@
-﻿#ifndef PLAYER_H
+﻿/**
+*
+* Solution to course project # 10
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2024/2025
+*
+* @author Lubomir Krastev
+* @idnumber 1MI0600441 * @compiler VC
+*
+* <file with main logic>
+*
+*/
+
+#ifndef PLAYER_H
 #define PLAYER_H
 
 #include "Card.h"
 
-// Константа
 const int MAX_CARDS_IN_HAND = 3;
 
 // Сктруктура на играча

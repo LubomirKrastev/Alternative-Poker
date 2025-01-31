@@ -1,4 +1,18 @@
-﻿#ifndef GAME_H
+﻿/**
+*
+* Solution to course project # 10
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2024/2025
+*
+* @author Lubomir Krastev
+* @idnumber 1MI0600441 * @compiler VC
+*
+* <file with main logic>
+*
+*/
+
+#ifndef GAME_H
 #define GAME_H
 
 #include "Player.h"
@@ -19,11 +33,11 @@ int calculateCardValue(Rank rank);
 int calculateHandValue(const Player& player);
 void dealCardsToActivePlayers(Player* players, int numPlayers, Card* deck, int& deckIndex);
 bool handleTie(Player* players, int numPlayers, int& pot, int maxHandValue, Card* deck);
+void removePlayersWithZeroBalance(Player*& players, int& numPlayers);
 int initializeNewGame(Player*& players);
 void playRound(Player* players, int numPlayers, Card* deck, int& pot);
-void removePlayersWithZeroBalance(Player*& players, int& numPlayers);
-void saveGameState(Player* players, int numPlayers);
 void fileManage(int& numPlayers, Player*& players);
+void saveGameState(Player* players, int numPlayers);
 void startGame();
 
 #endif
