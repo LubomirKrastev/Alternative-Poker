@@ -152,17 +152,6 @@ When you launch the executable:
 
 ---
 
-## 🗺️ Possible Extensions
-
-- [ ] Multiple persistent profiles instead of a single `save_data.txt`
-- [ ] Configurable starting balance and chip value
-- [ ] Coloured suits and prettier hand printing in the console
-- [ ] Simple bot opponent
-- [ ] Statistics: hands played, biggest pot won, win rate per player
-- [ ] Port the same rules to an OOP design (good migration target for an Object-Oriented Programming course)
-
----
-
 ## 👤 Author
 
 **Lyubomir Krastev**
